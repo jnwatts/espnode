@@ -67,18 +67,20 @@ int ssl_connect(SSLConnection* conn, const char* host, int port) {
         return handle_error(ret);
     }
 
-    ret = mbedtls_x509_crt_parse(&conn->client_cert,
-            (const unsigned char *) conn->client_cert_str,
-            strlen(conn->client_cert_str) + 1);
-    if (ret < 0) {
-        return handle_error(ret);
-    }
+    if (conn->client_cert_str) {
+        ret = mbedtls_x509_crt_parse(&conn->client_cert,
+                (const unsigned char *) conn->client_cert_str,
+                strlen(conn->client_cert_str) + 1);
+        if (ret < 0) {
+            return handle_error(ret);
+        }
 
-    ret = mbedtls_pk_parse_key(&conn->client_key,
-            (const unsigned char *) conn->client_key_str,
-            strlen(conn->client_key_str) + 1, NULL, 0);
-    if (ret != 0) {
-        return handle_error(ret);
+        ret = mbedtls_pk_parse_key(&conn->client_key,
+                (const unsigned char *) conn->client_key_str,
+                strlen(conn->client_key_str) + 1, NULL, 0);
+        if (ret != 0) {
+            return handle_error(ret);
+        }
     }
 
     snprintf(buffer, sizeof(buffer), "%d", port);
@@ -105,10 +107,12 @@ int ssl_connect(SSLConnection* conn, const char* host, int port) {
     mbedtls_ssl_conf_read_timeout(&conn->ssl_conf, SSL_READ_TIMEOUT_MS);
     mbedtls_ssl_conf_ca_chain(&conn->ssl_conf, &conn->ca_cert, NULL);
 
-    ret = mbedtls_ssl_conf_own_cert(&conn->ssl_conf, &conn->client_cert,
-            &conn->client_key);
-    if (ret != 0) {
-        return handle_error(ret);
+    if (conn->client_cert_str) {
+        ret = mbedtls_ssl_conf_own_cert(&conn->ssl_conf, &conn->client_cert,
+                &conn->client_key);
+        if (ret != 0) {
+            return handle_error(ret);
+        }
     }
 
     ret = mbedtls_ssl_setup(&conn->ssl_ctx, &conn->ssl_conf);
