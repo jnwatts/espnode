@@ -153,7 +153,7 @@ static void mqtt_task(void *pvParameters) {
             continue;
         }
 
-        printf("%s: started\n\r", __func__);
+        printf("%s: started node id %s\n\r", __func__, mqtt_client_id);
         ssl_reset = 0;
         ssl_init(ssl_conn);
         ssl_conn->ca_cert_str = ca_cert;
