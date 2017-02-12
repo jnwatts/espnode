@@ -1,1 +1,2 @@
 const char *client_endpoint = "test.mosquitto.org";
+const int client_port = 8884;

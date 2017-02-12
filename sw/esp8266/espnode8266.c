@@ -23,10 +23,10 @@
 #define MQTT_PUB_TOPIC "esp8266/status"
 #define MQTT_SUB_TOPIC "esp8266/control"
 #define GPIO_LED 2
-#define MQTT_PORT 8883
 
 /* certs, key, and endpoint */
 extern char *ca_cert, *client_endpoint, *client_cert, *client_key;
+extern int client_port;
 
 static int wifi_alive = 0;
 static int ssl_reset;
@@ -157,9 +157,9 @@ static void mqtt_task(void *pvParameters) {
         network.mqttread = mqtt_ssl_read;
         network.mqttwrite = mqtt_ssl_write;
 
-        printf("%s: connecting to MQTT server %s ... ", __func__,
-                client_endpoint);
-        ret = ssl_connect(ssl_conn, client_endpoint, MQTT_PORT);
+        printf("%s: connecting to MQTT server %s:%d ... ", __func__,
+                client_endpoint, client_port);
+        ret = ssl_connect(ssl_conn, client_endpoint, client_port);
 
         if (ret) {
             printf("error: %d\n\r", ret);
