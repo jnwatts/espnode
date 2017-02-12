@@ -1,0 +1,8 @@
+build/
+firmware/
+local.mk
+private_ssid_config.h
+client_config.c
+client_cert.c
+client_key.c
+ca_cert.c
