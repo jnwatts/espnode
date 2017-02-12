@@ -146,6 +146,13 @@ static void mqtt_task(void *pvParameters) {
             continue;
         }
 
+        if (ret) {
+            // Rate limit loop in case of errors
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
+            ret = 0;
+            continue;
+        }
+
         printf("%s: started\n\r", __func__);
         ssl_reset = 0;
         ssl_init(ssl_conn);
