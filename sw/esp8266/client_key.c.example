@@ -1,0 +1,4 @@
+const char *client_key = 
+   "-----BEGIN RSA PRIVATE KEY-----\r\n"
+   "<insert client.key.pem>\r\n"
+   "-----END RSA PRIVATE KEY-----\r\n";

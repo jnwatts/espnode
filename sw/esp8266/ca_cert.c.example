@@ -1,0 +1,4 @@
+const char *ca_cert = 
+   "-----BEGIN CERTIFICATE-----\r\n"
+   "<insert ca_root.cert.pem>\r\n"
+   "-----END CERTIFICATE-----\r\n";
