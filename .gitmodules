@@ -1,0 +1,6 @@
+[submodule "sw/sdk/esp-open-rtos"]
+	path = sw/sdk/esp-open-rtos
+	url = https://github.com/SuperHouse/esp-open-rtos.git
+[submodule "sw/sdk/esp-idf"]
+	path = sw/sdk/esp-idf
+	url = https://github.com/espressif/esp-idf.git
