@@ -20,8 +20,8 @@
 // this must be ahead of any mbedtls header files so the local mbedtls/config.h can be properly referenced
 #include "ssl_connection.h"
 
-#define MQTT_PUB_TOPIC "esp8266/status"
-#define MQTT_SUB_TOPIC "esp8266/control"
+#define MQTT_PUB_TOPIC "espnode/status"
+#define MQTT_SUB_TOPIC "espnode/control"
 #define GPIO_LED 2
 
 /* certs, key, and endpoint */
