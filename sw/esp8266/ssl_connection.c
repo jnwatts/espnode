@@ -101,7 +101,7 @@ int ssl_connect(SSLConnection* conn, const char* host, int port) {
     mbedtls_debug_set_threshold(5);
 #endif
 
-    mbedtls_ssl_conf_authmode(&conn->ssl_conf, MBEDTLS_SSL_VERIFY_REQUIRED);
+    mbedtls_ssl_conf_authmode(&conn->ssl_conf, MBEDTLS_SSL_VERIFY_NONE);
     mbedtls_ssl_conf_rng(&conn->ssl_conf, mbedtls_ctr_drbg_random,
             &conn->drbg_ctx);
     mbedtls_ssl_conf_read_timeout(&conn->ssl_conf, SSL_READ_TIMEOUT_MS);
