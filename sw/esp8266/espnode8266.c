@@ -10,7 +10,9 @@
 #include <task.h>
 #include <queue.h>
 #include <ssid_config.h>
+#include <sysparam.h>
 
+#include <espressif/spi_flash.h>
 #include <espressif/esp_sta.h>
 #include <espressif/esp_wifi.h>
 
@@ -20,13 +22,15 @@
 // this must be ahead of any mbedtls header files so the local mbedtls/config.h can be properly referenced
 #include "ssl_connection.h"
 
+#include "command.h"
+
 #define MQTT_PUB_TOPIC "espnode/status"
 #define MQTT_SUB_TOPIC "espnode/control"
 #define GPIO_LED 2
 
 /* certs, key, and endpoint */
-extern char *ca_cert, *client_endpoint, *client_cert, *client_key;
-extern int client_port;
+extern char *_ca_cert, *_client_endpoint, *_client_cert, *_client_key;
+extern int _client_port;
 
 static int wifi_alive = 0;
 static int ssl_reset;
@@ -43,7 +47,7 @@ static void beat_task(void *pvParameters) {
             continue;
         }
 
-        printf("Schedule to publish\r\n");
+        // printf("Schedule to publish\r\n");
 
         snprintf(msg, sizeof(msg), "%d", count);
         if (xQueueSend(publish_queue, (void *) msg, 0) == pdFALSE) {
@@ -134,6 +138,8 @@ static void mqtt_task(void *pvParameters) {
     uint8_t mqtt_buf[100];
     uint8_t mqtt_readbuf[100];
     mqtt_packet_connect_data_t data = mqtt_packet_connect_data_initializer;
+    char *client_endpoint = NULL;
+    int32_t client_port;
 
     memset(mqtt_client_id, 0, sizeof(mqtt_client_id));
     strcpy(mqtt_client_id, "ESP-");
@@ -156,9 +162,21 @@ static void mqtt_task(void *pvParameters) {
         printf("%s: started node id %s\n\r", __func__, mqtt_client_id);
         ssl_reset = 0;
         ssl_init(ssl_conn);
-        ssl_conn->ca_cert_str = ca_cert;
-        ssl_conn->client_cert_str = client_cert;
-        ssl_conn->client_key_str = client_key;
+
+        ret |= sysparam_get_data("ca_cert", &ssl_conn->ca_cert_str, NULL, NULL);
+        if (ret) printf("%d?\n", __LINE__);
+        ret |= sysparam_get_data("client_cert", &ssl_conn->client_cert_str, NULL, NULL);
+        if (ret) printf("%d?\n", __LINE__);
+        ret |= sysparam_get_data("client_key", &ssl_conn->client_key_str, NULL, NULL);
+        if (ret) printf("%d?\n", __LINE__);
+        ret |= sysparam_get_data("client_endpoint", &client_endpoint, NULL, NULL);
+        if (ret) printf("%d?\n", __LINE__);
+        ret |= sysparam_get_int32("client_port", &client_port);
+        if (ret) printf("%d?\n", __LINE__);
+        if (ret) {
+            printf("Failed to get params\n");
+            break;
+        }
 
         mqtt_network_new(&network);
         network.mqttread = mqtt_ssl_read;
@@ -225,6 +243,9 @@ static void mqtt_task(void *pvParameters) {
         printf("Connection dropped, request restart\n\r");
         ssl_destroy(ssl_conn);
     }
+
+    printf("Fatal error occured, returning from mqtt task");
+    vTaskDelete(NULL);
 }
 
 static void wifi_task(void *pvParameters) {
@@ -284,4 +305,5 @@ void user_init(void) {
     xTaskCreate(&wifi_task, "wifi_task", 256, NULL, 2, NULL);
     xTaskCreate(&beat_task, "beat_task", 256, NULL, 2, NULL);
     xTaskCreate(&mqtt_task, "mqtt_task", 2048, NULL, 2, NULL);
+    xTaskCreate(&command_task, "command_task", 512, NULL, 2, NULL);
 }
