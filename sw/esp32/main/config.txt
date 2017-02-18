@@ -1,0 +1,4 @@
+wifi ssid wai_naught
+wifi password videogames
+mqtt hostname mqtt.sroz.net
+mqtt port 8883
