@@ -9,12 +9,13 @@
 #include <driver/gpio.h>
 #include <string.h>
 
+#include "app_config.h"
 #include "command.h"
 
 #ifdef NDEBUG
 #define ESPNODE_ERROR_CHECK ESP_ERROR_CHECK
 #else
-#define ESPNODE_ERROR_CHECK(x) do { esp_err_t rc = (x); if (rc != ESP_OK) { printf("CHECK FAILED: %s:%d " #x "\n", __FILE__, __LINE__); while(1); } } while (0);
+#define ESPNODE_ERROR_CHECK(x) do { esp_err_t rc = (x); if (rc != ESP_OK) { printf("CHECK FAILED: %s:%d " #x "\n", __FILE__, __LINE__); while(1) { vTaskDelay(100 * portTICK_PERIOD_MS); } } } while (0);
 #endif
 
 nvs_handle nvs;
@@ -41,15 +42,15 @@ void app_main(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 
     len = sizeof(sta_config.sta.ssid);
-    ESPNODE_ERROR_CHECK(nvs_get_str(nvs, "ssid", (char*)sta_config.sta.ssid, &len));
+    ESPNODE_ERROR_CHECK(nvs_get_str(nvs, WIFI_PREFIX "ssid", (char*)sta_config.sta.ssid, &len));
 
     len = sizeof(sta_config.sta.password);
-    err = nvs_get_str(nvs, "password", (char*)sta_config.sta.password, &len);
+    err = nvs_get_str(nvs, WIFI_PREFIX "password", (char*)sta_config.sta.password, &len);
     if (!(err == ESP_OK || err == ESP_ERR_NVS_NOT_FOUND))
         ESPNODE_ERROR_CHECK(err);
 
     len = sizeof(sta_config.sta.bssid);
-    err = nvs_get_str(nvs, "bssid", (char*)sta_config.sta.bssid, &len);
+    err = nvs_get_str(nvs, WIFI_PREFIX "bssid", (char*)sta_config.sta.bssid, &len);
     if (err == ESP_OK) {
         sta_config.sta.bssid_set = true;
     } else if (err == ESP_ERR_NVS_NOT_FOUND) {
