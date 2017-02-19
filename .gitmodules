@@ -4,9 +4,6 @@
 [submodule "sw/sdk/esp-idf"]
 	path = sw/sdk/esp-idf
 	url = https://github.com/espressif/esp-idf.git
-[submodule "sw/esp32/components/espmqtt"]
-	path = sw/esp32/components/espmqtt
-	url = https://github.com/jnwatts/espmqtt.git
 [submodule "sw/esp32/components/esp32-microrl"]
 	path = sw/esp32/components/esp32-microrl
 	url = https://github.com/jnwatts/esp32-microrl.git
