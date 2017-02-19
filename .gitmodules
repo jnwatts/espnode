@@ -7,3 +7,6 @@
 [submodule "sw/esp32/components/esp32-microrl"]
 	path = sw/esp32/components/esp32-microrl
 	url = https://github.com/jnwatts/esp32-microrl.git
+[submodule "sw/esp32/components/esp32-paho.mqtt.embedded-c"]
+	path = sw/esp32/components/esp32-paho.mqtt.embedded-c
+	url = https://github.com/jnwatts/esp32-paho.mqtt.embedded-c.git
