@@ -1,0 +1,4 @@
+certs/*
+csr/*
+private/*
+csr.conf
